@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}History &mdash; Privacy Risk Scanner{% endblock %}
+{% block content %}
+
+<section class="results-header">
+  <div>
+    <h1>Scan history</h1>
+    <p class="subtitle">Most recent scans this session (in-memory only, cleared on restart).</p>
+  </div>
+  <a href="{{ url_for('index') }}" class="btn btn-primary">New scan</a>
+</section>
+
+<section class="card">
+  {% if history %}
+  <table class="data-table">
+    <thead>
+      <tr><th>Batch</th><th>Time</th><th>Files</th><th>Risk level</th><th>Score</th><th>Findings</th></tr>
+    </thead>
+    <tbody>
+      {% for h in history %}
+      <tr>
+        <td>#{{ h.batch_id }}</td>
+        <td>{{ h.timestamp }}</td>
+        <td>{{ h.file_count }}</td>
+        <td><span class="level-pill level-pill-{{ h.level|lower }}">{{ h.level }}</span></td>
+        <td>{{ h.score }}</td>
+        <td>{{ h.total_findings }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No scans yet this session. Run a scan to see it appear here.</p>
+  {% endif %}
+</section>
+
+{% endblock %}

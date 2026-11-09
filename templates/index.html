@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Scan Documents &mdash; Privacy Risk Scanner{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <h1>Scan documents for privacy risk</h1>
+  <p class="subtitle">Upload one or more files to detect emails, phone numbers, SSNs, credit card numbers, API keys, addresses, and more &mdash; scored on a single risk dashboard.</p>
+</section>
+
+<section class="card upload-card">
+  <form action="{{ url_for('scan') }}" method="post" enctype="multipart/form-data" id="scan-form">
+    <label class="dropzone" id="dropzone" for="file-input">
+      <input type="file" id="file-input" name="documents" multiple
+             accept="{{ extensions|join(',') }}">
+      <div class="dropzone-inner">
+        <div class="dropzone-icon">&#128193;</div>
+        <p><strong>Click to choose files</strong> or drag &amp; drop</p>
+        <p class="file-types">Supported: {{ extensions|join(', ') }}</p>
+        <p id="file-list" class="file-list"></p>
+      </div>
+    </label>
+    <button type="submit" class="btn btn-primary" id="scan-btn">Scan documents</button>
+  </form>
+</section>
+
+<section class="grid-3">
+  <div class="info-card">
+    <h3>What gets detected</h3>
+    <ul>
+      <li>Emails, phone numbers, physical addresses</li>
+      <li>SSNs, passport &amp; driver's license numbers</li>
+      <li>Credit cards (Luhn-validated), IBANs, bank accounts</li>
+      <li>AWS keys, API keys/secrets, private key blocks</li>
+      <li>Dates of birth, medical record references</li>
+    </ul>
+  </div>
+  <div class="info-card">
+    <h3>How scoring works</h3>
+    <p>Each finding is weighted by severity (low &rarr; critical) and combined into a 0&ndash;100 risk score with diminishing returns, so one critical leak stands out without a large document maxing out unfairly.</p>
+  </div>
+  <div class="info-card">
+    <h3>Privacy of the scan itself</h3>
+    <p>Files are parsed in-memory, scanned, then immediately deleted from disk. Only the redacted findings (never full matches) are shown and kept for this session.</p>
+  </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}

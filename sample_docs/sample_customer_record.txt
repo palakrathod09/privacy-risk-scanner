@@ -1,0 +1,20 @@
+Customer Intake Form
+
+Name: Jordan A. Rivera
+Email: jordan.rivera@example.com
+Phone: (415) 555-0192
+DOB: 03/14/1990
+Address: 4821 Maple Grove Lane, Austin, TX 78701
+
+Account Number: 004523198712
+SSN: 219-09-9999
+
+Payment on file:
+Card: 4111 1111 1111 1111
+
+Notes: Patient ID 88213 flagged for follow-up (diagnosis pending).
+Server config accidentally pasted below:
+aws_access_key_id = AKIAABCDEFGHIJKLMNOP
+api_key: "sk_live_9f8a7b6c5d4e3f2g1h0i9j8k"
+
+IP of last login: 203.0.113.42

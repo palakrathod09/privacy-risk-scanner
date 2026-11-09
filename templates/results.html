@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Scan Results &mdash; Privacy Risk Scanner{% endblock %}
+{% block content %}
+
+<section class="results-header">
+  <div>
+    <h1>Scan report <span class="batch-id">#{{ result.batch_id }}</span></h1>
+    <p class="subtitle">{{ result.timestamp }} &middot; {{ result.files|length }} file(s) scanned{% if result.skipped %} &middot; {{ result.skipped|length }} skipped (unsupported type){% endif %}</p>
+  </div>
+  <a href="{{ url_for('index') }}" class="btn btn-secondary">New scan</a>
+</section>
+
+<section class="dashboard-grid">
+  <div class="card score-card level-{{ result.overall.level|lower }}">
+    <h3>Overall risk score</h3>
+    <div class="gauge-wrap">
+      <canvas id="gaugeChart" width="220" height="220"></canvas>
+      <div class="gauge-center">
+        <span class="gauge-score">{{ result.overall.score }}</span>
+        <span class="gauge-max">/100</span>
+      </div>
+    </div>
+    <div class="level-pill level-pill-{{ result.overall.level|lower }}">{{ result.overall.level }} risk</div>
+  </div>
+
+  <div class="card">
+    <h3>Findings by severity</h3>
+    <canvas id="severityChart" height="220"></canvas>
+  </div>
+
+  <div class="card">
+    <h3>Findings by category</h3>
+    <canvas id="categoryChart" height="220"></canvas>
+  </div>
+
+  <div class="card stats-card">
+    <h3>At a glance</h3>
+    <div class="stat-row"><span>Total findings</span><strong>{{ result.overall.total }}</strong></div>
+    <div class="stat-row"><span>Critical</span><strong class="sev-critical">{{ result.overall.by_severity.critical }}</strong></div>
+    <div class="stat-row"><span>High</span><strong class="sev-high">{{ result.overall.by_severity.high }}</strong></div>
+    <div class="stat-row"><span>Medium</span><strong class="sev-medium">{{ result.overall.by_severity.medium }}</strong></div>
+    <div class="stat-row"><span>Low</span><strong class="sev-low">{{ result.overall.by_severity.low }}</strong></div>
+    <div class="stat-row"><span>Files with findings</span><strong>{{ result.files|selectattr('summary.total', 'gt', 0)|list|length }} / {{ result.files|length }}</strong></div>
+  </div>
+</section>
+
+<section class="card">
+  <h3>Per-file breakdown</h3>
+  <table class="data-table">
+    <thead>
+      <tr><th>File</th><th>Risk level</th><th>Score</th><th>Findings</th></tr>
+    </thead>
+    <tbody>
+      {% for f in result.files %}
+      <tr>
+        <td>{{ f.name }}</td>
+        <td><span class="level-pill level-pill-{{ f.summary.level|lower }}">{{ f.summary.level }}</span></td>
+        <td>{{ f.summary.score }}</td>
+        <td>{{ f.summary.total }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if result.skipped %}
+  <p class="muted">Skipped (unsupported type): {{ result.skipped|join(', ') }}</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h3>Detailed findings</h3>
+  {% if result.findings %}
+  <div class="table-scroll">
+  <table class="data-table findings-table">
+    <thead>
+      <tr><th>Severity</th><th>Category</th><th>File</th><th>Line</th><th>Match (redacted)</th><th>Context</th></tr>
+    </thead>
+    <tbody>
+      {% for item in result.findings %}
+      <tr class="row-sev-{{ item.severity }}">
+        <td><span class="sev-badge sev-badge-{{ item.severity }}">{{ item.severity }}</span></td>
+        <td>{{ item.category }}</td>
+        <td>{{ item.source }}</td>
+        <td>{{ item.line }}</td>
+        <td><code>{{ item.match }}</code></td>
+        <td class="context-cell">&hellip;{{ item.context }}&hellip;</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% else %}
+  <p class="muted">No sensitive data patterns were detected. &#9989;</p>
+  {% endif %}
+</section>
+
+<script>
+  const overall = {{ result.overall|tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
